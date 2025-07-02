@@ -564,26 +564,7 @@ async def txt_handler(bot: Client, m: Message):
     await input.delete(True)
     file_name, ext = os.path.splitext(os.path.basename(x))  # Extract filename & extension
     path = f"./downloads/{m.chat.id}"
-
-    links = []
-    if ext == '.html':
-        with open(x, 'r', encoding='utf-8') as f:
-            soup = BeautifulSoup(f, 'html.parser')
-            for a in soup.find_all('a', href=True):
-                onclick_attr = a.get('onclick', '')
-                match = re.search(r"playVideo\('(.+?)'\)", onclick_attr)
-                if match:
-                    url = match.group(1)
-                    name = a.text.strip()
-                    links.append((name, url))
-    elif ext == '.txt':
-        with open(x, "r") as f:
-            content = f.read()
-        content = content.split("\n")
-        for i in content:
-            if "://" in i:
-                links.append(i.split("://", 1))
-
+    
     pdf_count = 0
     img_count = 0
     v2_count = 0
@@ -595,28 +576,36 @@ async def txt_handler(bot: Client, m: Message):
     other_count = 0
     
     try:    
-        for name, url in links:
-            if ".pdf" in url:
-                pdf_count += 1
-            elif url.endswith((".png", ".jpeg", ".jpg")):
-                img_count += 1
-            elif "v2" in url:
-                v2_count += 1
-            elif "mpd" in url:
-                mpd_count += 1
-            elif "m3u8" in url:
-                m3u8_count += 1
-            elif "drm" in url:
-                drm_count += 1
-            elif "youtu" in url:
-                yt_count += 1
-            elif "zip" in url:
-                zip_count += 1
-            else:
-                other_count += 1
+        with open(x, "r") as f:
+            content = f.read()
+        content = content.split("\n")
+        
+        links = []
+        for i in content:
+            if "://" in i:
+                url = i.split("://", 1)[1]
+                links.append(i.split("://", 1))
+                if ".pdf" in url:
+                    pdf_count += 1
+                elif url.endswith((".png", ".jpeg", ".jpg")):
+                    img_count += 1
+                elif "v2" in url:
+                    v2_count += 1
+                elif "mpd" in url:
+                    mpd_count += 1
+                elif "m3u8" in url:
+                    m3u8_count += 1
+                elif "drm" in url:
+                    drm_count += 1
+                elif "youtu" in url:
+                    yt_count += 1
+                elif "zip" in url:
+                    zip_count += 1
+                else:
+                    other_count += 1
         os.remove(x)
-    except Exception as e:
-        await m.reply_text(f"<b>🔹Invalid file input: {str(e)}</b>")
+    except:
+        await m.reply_text("<b>🔹Invalid file input.</b>")
         os.remove(x)
         return
     

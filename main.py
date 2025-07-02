@@ -760,7 +760,7 @@ async def txt_handler(bot: Client, m: Message):
             url = "https://" + Vxy
             link0 = "https://" + Vxy
 
-            name1 = links[i][0].replace("(", "[").replace(")", "]").replace("_", "").replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "").replace("*", "").replace(".", "").replace("https", "").replace("http", "").strip()
+            name1 = re.sub(r'[\\/:*?"<>|]', '', links[i][0])
             if "," in raw_text3:
                  name = f'{PRENAME} {name1[:60]}'
             else:

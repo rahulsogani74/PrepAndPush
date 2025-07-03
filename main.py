@@ -570,12 +570,9 @@ async def txt_handler(bot: Client, m: Message):
         with open(x, 'r', encoding='utf-8') as f:
             soup = BeautifulSoup(f, 'html.parser')
             for a in soup.find_all('a', href=True):
-                onclick_attr = a.get('onclick', '')
-                match = re.search(r"playVideo\('(.+?)'\)", onclick_attr)
-                if match:
-                    url = match.group(1)
-                    name = a.text.strip()
-                    links.append((name, url))
+                url = a['href']
+                name = a.text.strip()
+                links.append((name, url))
     elif ext == '.txt':
         with open(x, "r") as f:
             content = f.read()
